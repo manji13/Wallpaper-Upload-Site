@@ -78,7 +78,7 @@ const Home = () => {
                                 }`}
                         >
                             <Link
-                                to="/register"
+                                to="/signup"
                                 className="group relative px-12 py-4 bg-gradient-to-r from-pink-500 via-pink-600 to-purple-600 text-white text-lg font-bold rounded-full overflow-hidden shadow-2xl shadow-pink-500/50 hover:shadow-pink-500/70 transition-all duration-300 transform hover:scale-110 hover:-translate-y-1"
                             >
                                 <span className="relative z-10">Get Started</span>
