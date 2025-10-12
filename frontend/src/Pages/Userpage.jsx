@@ -1,9 +1,10 @@
 import React from 'react'
+import Usernab from '../Components/Usernab.jsx';
 
 const Userpage = () => {
   return (
     <div>
-      sdd dd
+      <Usernab />
     </div>
   )
 }

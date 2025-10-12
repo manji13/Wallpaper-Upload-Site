@@ -3,7 +3,7 @@ import React from 'react'
 const Employeepage = () => {
   return (
     <div>
-      Employee page
+      ads
     </div>
   )
 }
