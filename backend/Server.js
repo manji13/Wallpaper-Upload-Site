@@ -2,30 +2,29 @@ import express from "express";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import cors from "cors";
 import connectDB from "./db.js";
+import router from "./Routes/userRoutes.js";
 
-// Fix __dirname in ES Module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables
 dotenv.config({ path: path.join(__dirname, ".env") });
-
-// Test if dotenv is working
-console.log("MONGO_URI:", process.env.MONGO_URI);
 
 const app = express();
 
-// Connect to MongoDB
+// Connect MongoDB
 connectDB();
 
 // Middleware
+app.use(cors({ origin: "http://localhost:3000" })); // allow frontend
 app.use(express.json());
 
-// Test route
-app.get("/", (req, res) => {
-  res.send("API is running...");
-});
+// Default route
+app.get("/", (req, res) => res.send("API is running..."));
+
+// User routes
+app.use("/api/users", router);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

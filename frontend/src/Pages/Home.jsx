@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import home_pageimg from "../Assets/home_pageimg.jpg"
+import Navbar from '../Components/Navbar.jsx';
 
 const Home = () => {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -12,6 +13,7 @@ const Home = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-950 via-purple-900 to-purple-950 relative overflow-hidden">
+            <Navbar />
             {/* Animated Background Pattern */}
             <div className="absolute inset-0 opacity-30">
                 <div className="absolute top-1/4 right-0 w-[600px] h-[600px]">
