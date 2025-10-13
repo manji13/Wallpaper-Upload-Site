@@ -51,7 +51,7 @@ const Usernab = () => {
         {/* Right Side: Upload Button + Profile Icon */}
         <div className="flex items-center space-x-4">
           <Link
-            to="/upload"
+            to="/uploadimage"
             className="flex items-center gap-2 px-4 py-2 bg-pink-600 text-white rounded-full hover:bg-pink-700 transition-all duration-200 shadow-md"
           >
             <Upload className="w-4 h-4" />
