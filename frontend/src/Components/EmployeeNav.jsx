@@ -46,7 +46,7 @@ const EmployeeNav = () => {
         {/* Profile Icon */}
         <div className="flex items-center space-x-4">
           <Link
-            to="/profile"
+            to="/userprofile"
             className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all duration-200"
             title="Profile"
           >
