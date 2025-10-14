@@ -10,6 +10,8 @@ import Userpage from "./Pages/Userpage.jsx";
 import Userprofile from "./Pages/Userprofile.jsx";
 import EditProfile from "./Pages/Edituserprofile.jsx";
 import UploadImagePage  from "./Pages/Uploadimage.jsx";
+import ImageEdit from "./Pages/ImageEdit.jsx";
+import UserPolicy from "./Pages/UserPolycy/UserPolicy.jsx";
 
 import Employeepage from "./Pages/Employeepage.jsx";
 import EmployeeChart from "./Pages/EmployeeChart.jsx";
@@ -27,6 +29,8 @@ function App() {
         <Route path="/userprofile" element={<Userprofile />} />
         <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/uploadimage" element={<UploadImagePage  />} />
+        <Route path="/editimage" element={<ImageEdit />} />
+        <Route path="/userpolicy" element={<UserPolicy />} />
 
         <Route path="/employeepage" element={<Employeepage />} />
         <Route path="/chartpage" element={<EmployeeChart />} />

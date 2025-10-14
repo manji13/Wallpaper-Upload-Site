@@ -1,11 +1,15 @@
 import Image from "../Model/ImageModel.js";
+import fs from "fs";
+import path from "path";
 
-// Upload image
+// ✅ Upload image
 export const uploadImage = async (req, res) => {
   try {
     const { username, category, userId } = req.body;
-    if (!username || !category || !userId || !req.file)
+
+    if (!username || !category || !userId || !req.file) {
       return res.status(400).json({ msg: "All fields are required" });
+    }
 
     const imageUrl = `/uploads/${req.file.filename}`;
 
@@ -23,7 +27,7 @@ export const uploadImage = async (req, res) => {
   }
 };
 
-// Get all uploaded images
+// ✅ Get all uploaded images
 export const getAllImages = async (req, res) => {
   try {
     const images = await Image.find().sort({ createdAt: -1 });
@@ -33,7 +37,18 @@ export const getAllImages = async (req, res) => {
   }
 };
 
-// Edit image category (only owner)
+// ✅ Get user images
+export const getUserImages = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const images = await Image.find({ userId }).sort({ createdAt: -1 });
+    res.json(images);
+  } catch (err) {
+    res.status(500).json({ msg: "Failed to fetch user images" });
+  }
+};
+
+// ✅ Update image & category
 export const updateImage = async (req, res) => {
   try {
     const { id } = req.params;
@@ -43,18 +58,27 @@ export const updateImage = async (req, res) => {
     if (!image) return res.status(404).json({ msg: "Image not found" });
 
     if (image.userId !== userId)
-      return res.status(403).json({ msg: "Unauthorized" });
+      return res.status(403).json({ msg: "Unauthorized - Not your image" });
 
-    image.category = category;
+    // If a new file is uploaded, delete the old one
+    if (req.file) {
+      const oldPath = path.join(process.cwd(), "Upload", path.basename(image.imageUrl));
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      image.imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    if (category) image.category = category;
+
     await image.save();
 
     res.json({ msg: "Image updated successfully", image });
   } catch (err) {
-    res.status(500).json({ msg: "Failed to update image" });
+    console.error("Error updating image:", err);
+    res.status(500).json({ msg: "Failed to update image", error: err.message });
   }
 };
 
-// Delete image (only owner)
+// ✅ Delete image
 export const deleteImage = async (req, res) => {
   try {
     const { id } = req.params;
@@ -64,9 +88,14 @@ export const deleteImage = async (req, res) => {
     if (!image) return res.status(404).json({ msg: "Image not found" });
 
     if (image.userId !== userId)
-      return res.status(403).json({ msg: "Unauthorized" });
+      return res.status(403).json({ msg: "Unauthorized - Not your image" });
+
+    // delete image file from server
+    const filePath = path.join(process.cwd(), "Upload", path.basename(image.imageUrl));
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 
     await Image.findByIdAndDelete(id);
+
     res.json({ msg: "Image deleted successfully" });
   } catch (err) {
     res.status(500).json({ msg: "Failed to delete image" });

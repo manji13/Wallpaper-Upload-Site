@@ -1,16 +1,32 @@
 import React, { useEffect, useState } from "react";
 import Userprofilenav from "../Components/Userprofilenav.jsx";
+import { Loader2 } from "lucide-react"; // ✅ Added Loader2 icon
 
 const Userprofile = () => {
   const [user, setUser] = useState(null);
+  const [isPageLoading, setIsPageLoading] = useState(true); // ✅ Page load state
 
   useEffect(() => {
-    // Get logged user info from localStorage
     const storedUser = localStorage.getItem("userInfo");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+
+    // ✅ Simulate page load animation for 1.5s
+    const timer = setTimeout(() => setIsPageLoading(false), 1500);
+    return () => clearTimeout(timer);
   }, []);
+
+  if (isPageLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 z-50">
+        <div className="flex flex-col items-center gap-3 animate-fade-in">
+          <Loader2 className="w-12 h-12 text-purple-500 animate-spin" />
+          <p className="text-white text-lg font-semibold animate-pulse">Loading Profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -21,10 +37,10 @@ const Userprofile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white pt-24 px-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white pt-24 px-6 animate-fade-in">
       <Userprofilenav />
 
-      <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-8 text-center animate-fade-in">
+      <div className="max-w-2xl mx-auto bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-8 text-center">
         {/* Profile Picture */}
         <div className="flex justify-center mb-6">
           <div className="w-28 h-28 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-3xl font-bold shadow-lg">

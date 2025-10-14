@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { User, Mail, Lock, Eye, EyeOff, Save } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, Save, Loader2 } from "lucide-react"; // ✅ Added Loader2
 import Userprofilenav from "../Components/Userprofilenav.jsx";
 
 const EditProfile = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [userId, setUserId] = useState("");
+  const [isPageLoading, setIsPageLoading] = useState(true); // ✅ Page load state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,6 +19,10 @@ const EditProfile = () => {
     } else {
       navigate("/signin");
     }
+
+    // ✅ Simulate page load animation for 1.5s
+    const timer = setTimeout(() => setIsPageLoading(false), 1500);
+    return () => clearTimeout(timer);
   }, [navigate]);
 
   const handleChange = (e) =>
@@ -38,8 +43,19 @@ const EditProfile = () => {
     }
   };
 
+  if (isPageLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 z-50">
+        <div className="flex flex-col items-center gap-3 animate-fade-in">
+          <Loader2 className="w-12 h-12 text-purple-500 animate-spin" />
+          <p className="text-white text-lg font-semibold animate-pulse">Loading Profile Editor...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center pt-20 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col items-center pt-20 p-4 animate-fade-in">
       <Userprofilenav />
       <div className="bg-slate-900/50 backdrop-blur-xl p-8 rounded-3xl border border-slate-700/50 shadow-2xl max-w-md w-full mt-16">
         <h2 className="text-2xl font-semibold text-white mb-6 text-center">Edit Profile</h2>
@@ -108,6 +124,16 @@ const EditProfile = () => {
           </button>
         </form>
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fadeIn 0.6s ease-out;
+        }
+      `}</style>
     </div>
   );
 };

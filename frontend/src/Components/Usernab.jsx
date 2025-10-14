@@ -24,7 +24,7 @@ const Usernab = () => {
           </Link>
 
           <Link
-            to="/policy"
+            to="/userpolicy"
             className="text-gray-300 hover:text-white relative group transition-all"
           >
             Policy
