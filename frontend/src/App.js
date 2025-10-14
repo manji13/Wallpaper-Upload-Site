@@ -11,10 +11,13 @@ import Userprofile from "./Pages/Userprofile.jsx";
 import EditProfile from "./Pages/Edituserprofile.jsx";
 import UploadImagePage  from "./Pages/Uploadimage.jsx";
 import ImageEdit from "./Pages/ImageEdit.jsx";
-import UserPolicy from "./Pages/UserPolycy/UserPolicy.jsx";
+import UserPolicy from "./Pages/Policy/UserPolicy.jsx";
 
 import Employeepage from "./Pages/Employeepage.jsx";
 import EmployeeChart from "./Pages/EmployeeChart.jsx";
+import AddPolicy from "./Pages/Policy/AddPolicy.jsx";
+import EditPolicy from "./Pages/Policy/Editpolicy.jsx";
+import EditPolicyForm from "./Pages/Policy/EditPolicyForm.jsx";
 
 function App() {
   return (
@@ -34,6 +37,10 @@ function App() {
 
         <Route path="/employeepage" element={<Employeepage />} />
         <Route path="/chartpage" element={<EmployeeChart />} />
+        <Route path="/addpolicy" element={<AddPolicy />} />
+        <Route path="/editpolicy" element={<EditPolicy />} />
+        <Route path="/editpolicyform/:id" element={<EditPolicyForm />} />
+
         
       </Routes>
     </Router>

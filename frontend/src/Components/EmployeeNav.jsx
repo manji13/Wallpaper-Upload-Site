@@ -34,7 +34,7 @@ const EmployeeNav = () => {
           </Link>
 
           <Link
-            to="/policy"
+            to="/addpolicy"
             className="text-gray-300 hover:text-white relative group transition-all"
           >
             Policy
