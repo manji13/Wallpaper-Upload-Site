@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Search, Download, Images } from "lucide-react";
+import { Search, Download, Images, User } from "lucide-react";
 import Swal from "sweetalert2";
 import Usernab from "../Components/Usernab";
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -10,6 +10,14 @@ const Userpage = () => {
   const [search, setSearch] = useState("");
   const [filteredImages, setFilteredImages] = useState([]);
   const [downloadingIndex, setDownloadingIndex] = useState(null);
+  const [currentBgImage, setCurrentBgImage] = useState(0);
+
+  // Background images for header section
+  const backgroundImages = [
+    "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1920&q=80",
+    "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1920&q=80",
+    "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=1920&q=80"
+  ];
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -24,6 +32,15 @@ const Userpage = () => {
     fetchImages();
   }, []);
 
+  // Auto-change background images
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBgImage((prev) => (prev + 1) % backgroundImages.length);
+    }, 5000); // Change every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     if (!search) {
       setFilteredImages(images);
@@ -35,19 +52,18 @@ const Userpage = () => {
     }
   }, [search, images]);
 
-  // ✅ handleDownload with SweetAlert2 confirmation
-  const handleDownload = async (imageUrl, index) => {
+  const handleDownload = async (imageUrl, uploaderName, index) => {
     const result = await Swal.fire({
       title: "Download Image?",
-      text: "Do you want to download this image?",
+      text: `Do you want to download this image uploaded by ${uploaderName}?`,
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Yes, download",
       cancelButtonText: "Cancel",
-      confirmButtonColor: "#4ade80",
-      cancelButtonColor: "#f87171",
-      background: "rgba(30, 30, 40, 0.95)",
-      color: "#fff",
+      confirmButtonColor: "#8b5cf6",
+      cancelButtonColor: "#ef4444",
+      background: "#ffffff",
+      color: "#1f2937",
       showClass: {
         popup: "animate__animated animate__fadeInDown",
       },
@@ -81,8 +97,8 @@ const Userpage = () => {
           title: "Error",
           text: "Download failed. Try again.",
           icon: "error",
-          background: "rgba(30, 30, 40, 0.95)",
-          color: "#fff",
+          background: "#ffffff",
+          color: "#1f2937",
         });
         setDownloadingIndex(null);
       }
@@ -92,42 +108,73 @@ const Userpage = () => {
   return (
     <div>
       <Usernab />
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900">
-        {/* Animated background elements */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
-        </div>
-
-        <div className="max-w-7xl mx-auto mt-20 px-4 pb-20 relative z-10">
-          {/* Header Section */}
-          <div className="text-center mb-12 animate-fade-in">
-            <div className="flex items-center justify-center mb-4">
-              <div className="bg-gradient-to-r from-purple-400 to-blue-400 p-4 rounded-full">
-                <Images className="w-10 h-10 text-white" />
-              </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50 to-blue-50">
+        <div className="max-w-7xl mx-auto mt-20 px-4 pb-20">
+          {/* Header Section with Background Images */}
+          <div className="relative text-center mb-12 rounded-3xl overflow-hidden shadow-2xl">
+            {/* Background Images with Animation */}
+            <div className="absolute inset-0">
+              {backgroundImages.map((img, index) => (
+                <div
+                  key={index}
+                  className="absolute inset-0 transition-opacity duration-1000"
+                  style={{
+                    opacity: currentBgImage === index ? 1 : 0,
+                    backgroundImage: `url(${img})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                />
+              ))}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60"></div>
             </div>
-            <h1 className="text-5xl font-bold text-white mb-4 bg-gradient-to-r from-purple-200 to-blue-200 bg-clip-text text-transparent">
-              Image Gallery
-            </h1>
-            <p className="text-white/70 text-lg">Discover and download beautiful images</p>
-          </div>
 
-          {/* Search input */}
-          <div className="mb-10 flex justify-center animate-slide-up">
-            <div className="relative w-full max-w-xl group">
-              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                <Search className="w-5 h-5 text-white/50 group-focus-within:text-purple-400 transition-colors" />
+            {/* Content */}
+            <div className="relative z-10 py-20 px-4">
+              <div className="flex items-center justify-center mb-6">
+                <div className="bg-white/20 backdrop-blur-md p-5 rounded-3xl shadow-2xl border-2 border-white/30">
+                  <Images className="w-12 h-12 text-white" />
+                </div>
               </div>
-              <input
-                type="text"
-                placeholder="Search by category: nature, rain, road, wallpaper"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-6 py-4 rounded-2xl bg-white/10 backdrop-blur-xl border-2 border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all shadow-lg hover:bg-white/15"
-              />
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400 to-blue-400 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"></div>
+              <h1 className="text-6xl font-bold text-white mb-4 drop-shadow-2xl">
+                Image Gallery
+              </h1>
+              <p className="text-white/90 text-xl drop-shadow-lg mb-8">Discover and download beautiful images</p>
+              
+              {/* Search input inside background section */}
+              <div className="flex justify-center mb-6">
+                <div className="relative w-full max-w-2xl group">
+                  <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                    <Search className="w-5 h-5 text-gray-400 group-focus-within:text-purple-500 group-focus-within:scale-110 transition-all duration-300" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search by category: nature, rain, road, wallpaper"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full pl-12 pr-6 py-4 rounded-xl bg-white/95 backdrop-blur-sm border-2 border-white/30 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-white focus:bg-white focus:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl hover:bg-white"
+                  />
+                  {/* Animated gradient border on hover */}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 opacity-0 group-hover:opacity-20 group-focus-within:opacity-30 transition-opacity duration-300 pointer-events-none -z-10 blur-xl"></div>
+                  
+                  {/* Sparkle effect */}
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-white rounded-full opacity-0 group-focus-within:opacity-100 group-focus-within:animate-ping"></div>
+                  <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-purple-300 rounded-full opacity-0 group-focus-within:opacity-100 group-focus-within:animate-ping animation-delay-150"></div>
+                </div>
+              </div>
+
+              {/* Indicator dots */}
+              <div className="flex justify-center gap-2 mt-6">
+                {backgroundImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentBgImage(index)}
+                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                      currentBgImage === index ? "bg-white w-8" : "bg-white/50"
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
@@ -137,58 +184,59 @@ const Userpage = () => {
               filteredImages.map((img, index) => (
                 <div
                   key={index}
-                  className="group bg-white/10 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden border border-white/20 hover:border-purple-400/50 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20 animate-fade-in-up"
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  className="group bg-white rounded-2xl shadow-md overflow-hidden border border-gray-200 hover:border-purple-400 transition-all duration-300 hover:scale-105 hover:shadow-xl"
                 >
-                  <div className="relative overflow-hidden">
+                  <div className="relative overflow-hidden bg-white">
                     <img
                       src={`http://localhost:5000${img.imageUrl}`}
                       alt="Uploaded"
                       className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                     {/* Category badge */}
                     <div className="absolute top-4 right-4">
-                      <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-white text-xs font-semibold border border-white/30">
+                      <span className="px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-full text-gray-800 text-xs font-semibold shadow-lg border border-gray-200">
                         {img.category || "Unknown"}
                       </span>
                     </div>
-                  </div>
 
-                  <div className="p-5">
-                    <a
-                      href="#"
-                      onClick={() => handleDownload(img.imageUrl, index)}
-                      className="relative flex items-center justify-center gap-2 w-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white px-4 py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all transform hover:scale-105 active:scale-95 overflow-hidden group/btn"
-                    >
-                      <span className="relative z-10 flex items-center gap-2">
-                        {downloadingIndex === index ? (
-                          <>
-                            <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-                            Downloading...
-                          </>
-                        ) : (
-                          <>
-                            <Download className="w-5 h-5 group-hover/btn:animate-bounce" />
-                            Download
-                          </>
-                        )}
-                      </span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
-                    </a>
+                    {/* Uploader info with download button */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="bg-purple-500 p-1.5 rounded-full shadow-lg">
+                            <User className="w-4 h-4 text-white" />
+                          </div>
+                          <span className="text-white text-sm font-medium drop-shadow-lg">
+                            {img.uploaderName || img.username || "Anonymous"}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => handleDownload(img.imageUrl, img.uploaderName || img.username || "Anonymous", index)}
+                          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 p-2.5 rounded-full transition-all transform hover:scale-110 active:scale-95 shadow-lg"
+                          disabled={downloadingIndex === index}
+                        >
+                          {downloadingIndex === index ? (
+                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          ) : (
+                            <Download className="w-5 h-5 text-white" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="col-span-full flex flex-col items-center justify-center py-20 animate-fade-in">
-                <div className="bg-white/10 backdrop-blur-xl rounded-full p-8 mb-6">
-                  <Search className="w-16 h-16 text-white/50" />
+              <div className="col-span-full flex flex-col items-center justify-center py-20">
+                <div className="bg-gray-100 rounded-full p-8 mb-6">
+                  <Search className="w-16 h-16 text-gray-400" />
                 </div>
-                <p className="text-white/80 text-xl font-medium">
+                <p className="text-gray-700 text-xl font-medium">
                   No images found for "{search}"
                 </p>
-                <p className="text-white/60 text-sm mt-2">Try searching for: nature, rain, road, or wallpaper</p>
+                <p className="text-gray-500 text-sm mt-2">Try searching for: nature, rain, road, or wallpaper</p>
               </div>
             )}
           </div>
