@@ -8,6 +8,7 @@ import connectDB from "./db.js";
 import userRouter from "./Routes/userRoutes.js";
 import uploadRouter from "./Routes/uploadImageRoutes.js";
 import policyRouter from "./Routes/policyRoutes.js";
+import removeRoutes from "./Routes/removeRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,9 +22,11 @@ app.use(cors({ origin: "http://localhost:3000" }));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "Upload")));
 
+
 app.use("/api/users", userRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/policy", policyRouter);
+app.use("/api/remove", removeRoutes);
 
 app.get("/", (req, res) => res.send("API is running..."));
 
