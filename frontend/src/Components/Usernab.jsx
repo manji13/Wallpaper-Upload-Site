@@ -32,7 +32,7 @@ const Usernab = () => {
           </Link>
 
           <Link
-            to="/remove-bg"
+            to="/removebackground"
             className="text-gray-300 hover:text-white relative group transition-all"
           >
             Remove Background
