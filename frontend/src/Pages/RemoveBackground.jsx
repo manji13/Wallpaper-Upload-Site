@@ -1,12 +1,16 @@
 import React, { useState, useRef } from "react";
 import { Upload, Download, Image, X } from "lucide-react";
 import Usernab from "../Components/Usernab";
+import Swal from "sweetalert2";
+import axios from "axios";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 const RemoveBackground = () => {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleFileSelect = (e) => {
@@ -37,7 +41,8 @@ const RemoveBackground = () => {
       });
 
       const data = await res.json();
-      setResult("http://localhost:5000" + data.filePath);
+      const imageUrl = "http://localhost:5000" + data.filePath;
+      setResult(imageUrl);
     } catch (error) {
       console.error("Upload failed:", error);
       alert("Background removal failed!");
@@ -51,6 +56,56 @@ const RemoveBackground = () => {
     setResult("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
+    }
+  };
+
+  // ✅ SweetAlert download + open image
+  const handleDownload = async () => {
+    if (!result) return;
+
+    const resultAlert = await Swal.fire({
+      title: "Download Image?",
+      text: "Do you want to download this background-removed image?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, download",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#10b981",
+      cancelButtonColor: "#ef4444",
+      background: "#ffffff",
+      color: "#1f2937",
+      showClass: { popup: "animate__animated animate__fadeInDown" },
+      hideClass: { popup: "animate__animated animate__fadeOutUp" },
+    });
+
+    if (resultAlert.isConfirmed) {
+      try {
+        setDownloading(true);
+        const res = await axios.get(result, { responseType: "blob" });
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "background_removed.png");
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+
+        // ✅ Show image in new tab after download
+        window.open(result, "_blank");
+
+        setTimeout(() => setDownloading(false), 1500);
+      } catch (err) {
+        console.error("Download failed:", err);
+        Swal.fire({
+          title: "Error",
+          text: "Download failed. Try again.",
+          icon: "error",
+          background: "#ffffff",
+          color: "#1f2937",
+        });
+        setDownloading(false);
+      }
     }
   };
 
@@ -82,9 +137,7 @@ const RemoveBackground = () => {
                 <h2 className="text-2xl font-semibold mb-3 text-gray-800">
                   Upload Image
                 </h2>
-                <p className="text-gray-500 mb-6">
-                  or drop a file here
-                </p>
+                <p className="text-gray-500 mb-6">or drop a file here</p>
                 <button
                   type="button"
                   className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200"
@@ -146,15 +199,21 @@ const RemoveBackground = () => {
                     Processed
                   </h3>
                 </div>
-                <div className="p-4 flex items-center justify-center min-h-[400px]" style={{
-                  backgroundImage: "linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)",
-                  backgroundSize: "20px 20px",
-                  backgroundPosition: "0 0, 0 10px, 10px -10px, -10px 0px"
-                }}>
+                <div
+                  className="p-4 flex items-center justify-center min-h-[400px]"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)",
+                    backgroundSize: "20px 20px",
+                    backgroundPosition: "0 0, 0 10px, 10px -10px, -10px 0px",
+                  }}
+                >
                   {loading ? (
                     <div className="flex flex-col items-center gap-4">
                       <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                      <p className="text-gray-600 font-medium">Processing your image...</p>
+                      <p className="text-gray-600 font-medium">
+                        Processing your image...
+                      </p>
                     </div>
                   ) : result ? (
                     <img
@@ -183,16 +242,20 @@ const RemoveBackground = () => {
                   Remove Background
                 </button>
               )}
-              
+
               {result && (
-                <a
-                  href={result}
-                  download
-                  className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2"
+                <button
+                  onClick={handleDownload}
+                  disabled={downloading}
+                  className={`${
+                    downloading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-lg transform hover:scale-105"
+                  } text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2`}
                 >
                   <Download className="w-5 h-5" />
-                  Download Image
-                </a>
+                  {downloading ? "Downloading..." : "Download Image"}
+                </button>
               )}
             </div>
           </div>
@@ -205,21 +268,27 @@ const RemoveBackground = () => {
               <Upload className="w-8 h-8 text-blue-600" />
             </div>
             <h3 className="font-semibold mb-2 text-gray-800">Easy Upload</h3>
-            <p className="text-gray-600 text-sm">Simply drag and drop or select your image</p>
+            <p className="text-gray-600 text-sm">
+              Simply drag and drop or select your image
+            </p>
           </div>
           <div className="text-center p-6">
             <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <Image className="w-8 h-8 text-purple-600" />
             </div>
             <h3 className="font-semibold mb-2 text-gray-800">AI Powered</h3>
-            <p className="text-gray-600 text-sm">Advanced AI removes backgrounds instantly</p>
+            <p className="text-gray-600 text-sm">
+              Advanced AI removes backgrounds instantly
+            </p>
           </div>
           <div className="text-center p-6">
             <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
               <Download className="w-8 h-8 text-green-600" />
             </div>
             <h3 className="font-semibold mb-2 text-gray-800">Free Download</h3>
-            <p className="text-gray-600 text-sm">Download your processed image for free</p>
+            <p className="text-gray-600 text-sm">
+              Download your processed image for free
+            </p>
           </div>
         </div>
       </div>
