@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Components/Navbar";
-import { Mail, Lock, Eye, EyeOff, User, UserCheck } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, User, UserCheck, CheckCircle } from "lucide-react";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +12,7 @@ const Signup = () => {
     role: "user"
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) =>
@@ -21,10 +22,14 @@ const Signup = () => {
     e.preventDefault();
     try {
       console.log("Signup Data:", formData);
-
       await axios.post("http://localhost:5000/api/users/signup", formData);
-      alert("Signup successful!");
-      navigate("/signin");
+      
+      // Show success animation
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        navigate("/signin");
+      }, 2500);
     } catch (err) {
       alert(err.response?.data?.message || "Signup failed");
     }
@@ -60,26 +65,40 @@ const Signup = () => {
           animation: blob 7s infinite;
         }
         @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-in-up {
-          animation: fadeInUp 0.6s ease-out;
-        }
+        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out; }
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }
         }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
+        .animate-float { animation: float 3s ease-in-out infinite; }
+
+        @keyframes popupFade {
+          from { opacity: 0; transform: translateY(20px) scale(0.95); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-popup {
+          animation: popupFade 0.5s ease-out forwards;
         }
       `}</style>
+
+      {/* Success Popup */}
+      {showSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+          <div className="relative bg-slate-900/80 border border-purple-500/40 rounded-3xl shadow-2xl p-8 text-center animate-popup max-w-xs w-full">
+            <div className="flex justify-center mb-4">
+              <CheckCircle className="text-green-400 w-12 h-12 animate-bounce" />
+            </div>
+            <h2 className="text-white text-lg font-semibold">Signup Successful!</h2>
+            <p className="text-slate-400 text-sm mt-2">
+              Redirecting you to Sign In...
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="flex w-full max-w-6xl relative z-10 gap-8 items-center">
         {/* Left side - Sign up form */}
@@ -158,11 +177,7 @@ const Signup = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-purple-400 transition-colors"
                   >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
@@ -204,7 +219,7 @@ const Signup = () => {
               {/* Sign in link */}
               <p className="text-center text-xs text-slate-400 mt-4">
                 Already have an account?{" "}
-                <a href="#" className="text-purple-400 hover:text-purple-300 font-semibold transition-colors">
+                <a href="/signin" className="text-purple-400 hover:text-purple-300 font-semibold transition-colors">
                   Sign in
                 </a>
               </p>
@@ -222,7 +237,7 @@ const Signup = () => {
             <div className="mt-6">
               <p className="text-slate-500 text-xs">
                 Already a member?{" "}
-                <a href="#" className="text-purple-400 hover:text-purple-300 font-semibold transition-colors">
+                <a href="/signin" className="text-purple-400 hover:text-purple-300 font-semibold transition-colors">
                   Sign in here
                 </a>
               </p>

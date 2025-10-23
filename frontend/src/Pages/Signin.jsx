@@ -2,11 +2,12 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Components/Navbar";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
 
 const Signin = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) =>
@@ -18,13 +19,18 @@ const Signin = () => {
       const { data } = await axios.post("http://localhost:5000/api/users/signin", formData);
       localStorage.setItem("userInfo", JSON.stringify(data));
       console.log("Login Response:", data);
-      alert("Login successful!");
 
-      if (data.role && data.role.toLowerCase() === "employee") {
-        navigate("/employeepage");
-      } else {
-        navigate("/userpage");
-      }
+      // Show success animation
+      setShowSuccess(true);
+
+      // Redirect after 2.5 seconds
+      setTimeout(() => {
+        if (data.role && data.role.toLowerCase() === "employee") {
+          navigate("/employeepage");
+        } else {
+          navigate("/userpage");
+        }
+      }, 2500);
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
     }
@@ -78,6 +84,14 @@ const Signin = () => {
         }
         .animate-float {
           animation: float 3s ease-in-out infinite;
+        }
+        @keyframes successPop {
+          0% { transform: scale(0.7); opacity: 0; }
+          60% { transform: scale(1.1); opacity: 1; }
+          100% { transform: scale(1); }
+        }
+        .animate-success {
+          animation: successPop 0.5s ease-out forwards;
         }
       `}</style>
 
@@ -197,6 +211,19 @@ const Signin = () => {
           </div>
         </div>
       </div>
+
+      {/* ✅ Success Modal */}
+      {showSuccess && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gradient-to-br from-purple-700 to-pink-600 p-8 rounded-3xl text-white shadow-2xl animate-success flex flex-col items-center">
+            <CheckCircle className="w-16 h-16 mb-3 text-green-300 animate-bounce" />
+            <h2 className="text-2xl font-bold mb-1">Login Successful!</h2>
+            <p className="text-sm text-purple-100 text-center">
+              Redirecting to your dashboard...
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
