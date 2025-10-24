@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Search, Download, Images, User, Loader2 } from "lucide-react"; // Added Loader2
+import { Search, Download, Images, User } from "lucide-react"; 
 import Swal from "sweetalert2";
 import Usernab from "../Components/Usernab";
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -11,10 +11,10 @@ const Userpage = () => {
   const [filteredImages, setFilteredImages] = useState([]);
   const [downloadingIndex, setDownloadingIndex] = useState(null);
   const [currentBgImage, setCurrentBgImage] = useState(0);
-  const [isPageLoading, setIsPageLoading] = useState(true); // ✅ Page load
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
   const backgroundImages = [
-    "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1920&q=80",
+    "https://www.pexels.com/photo/warm-light-through-a-window-at-dusk-30059049/",
     "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1920&q=80",
     "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=1920&q=80"
   ];
@@ -31,8 +31,7 @@ const Userpage = () => {
     };
     fetchImages();
 
-    // ✅ Simulate page load animation for 1.5s
-    const timer = setTimeout(() => setIsPageLoading(false), 1500);
+    const timer = setTimeout(() => setIsPageLoading(false), 1500); // Page load duration
     return () => clearTimeout(timer);
   }, []);
 
@@ -82,7 +81,6 @@ const Userpage = () => {
         link.click();
         link.remove();
         window.URL.revokeObjectURL(url);
-
         setTimeout(() => setDownloadingIndex(null), 1500);
       } catch (err) {
         console.error("Download failed:", err);
@@ -98,25 +96,26 @@ const Userpage = () => {
     }
   };
 
-  // ✅ Page load overlay
+  // Page load overlay with background blur + new loader
   if (isPageLoading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 via-purple-50 to-blue-50 z-50">
-        <div className="flex flex-col items-center gap-3 animate-fade-in">
-          <Loader2 className="w-12 h-12 text-purple-600 animate-spin" />
-          <p className="text-gray-800 text-xl font-semibold animate-pulse">Loading wallpaper...</p>
+      <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 via-purple-50 to-blue-50 backdrop-blur-md z-50 animate-fade-in">
+        <div className="flex flex-col items-center gap-5">
+          {/* New loading icon: bouncing circle */}
+          <div className="w-16 h-16 rounded-full border-4 border-purple-500 border-t-transparent animate-spin"></div>
+          <p className="text-gray-800 text-xl font-semibold animate-pulse">Loading gallery...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="animate-fade-in">
       <Usernab />
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50 to-blue-50 animate-fade-in">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50 to-blue-50">
         <div className="max-w-7xl mx-auto mt-20 px-4 pb-20">
           {/* Header Section */}
-          <div className="relative text-center mb-12 rounded-3xl overflow-hidden shadow-2xl">
+          <div className="relative text-center mb-12 rounded-3xl overflow-hidden shadow-2xl animate-slide-down">
             <div className="absolute inset-0">
               {backgroundImages.map((img, index) => (
                 <div
@@ -134,19 +133,19 @@ const Userpage = () => {
             </div>
 
             <div className="relative z-10 py-20 px-4">
-              <div className="flex items-center justify-center mb-6">
-                <div className="bg-white/20 backdrop-blur-md p-5 rounded-3xl shadow-2xl border-2 border-white/30">
+              <div className="flex items-center justify-center mb-6 animate-bounce-in">
+                <div className="bg-white/20 backdrop-blur-md p-5 rounded-3xl shadow-2xl border-2 border-white/30 animate-pulse-slow">
                   <Images className="w-12 h-12 text-white" />
                 </div>
               </div>
-              <h1 className="text-6xl font-bold text-white mb-4 drop-shadow-2xl">
+              <h1 className="text-6xl font-bold text-white mb-4 drop-shadow-2xl animate-fade-in-up delay-150">
                 Image Gallery
               </h1>
-              <p className="text-white/90 text-xl drop-shadow-lg mb-8">
+              <p className="text-white/90 text-xl drop-shadow-lg mb-8 animate-fade-in-up delay-300">
                 Discover and download beautiful images
               </p>
 
-              <div className="flex justify-center mb-6">
+              <div className="flex justify-center mb-6 animate-scale-in delay-500">
                 <div className="relative w-full max-w-2xl">
                   <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                     <Search className="w-5 h-5 text-gray-400" />
@@ -156,12 +155,12 @@ const Userpage = () => {
                     placeholder="Search by category: nature, rain, road, wallpaper"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-12 pr-6 py-4 rounded-xl bg-white/95 backdrop-blur-sm border-2 border-white/30 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all shadow-xl hover:shadow-2xl"
+                    className="w-full pl-12 pr-6 py-4 rounded-xl bg-white/95 backdrop-blur-sm border-2 border-white/30 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all shadow-xl hover:shadow-2xl animate-pulse-gentle"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-center gap-2 mt-6">
+              <div className="flex justify-center gap-2 mt-6 animate-fade-in delay-700">
                 {backgroundImages.map((_, index) => (
                   <button
                     key={index}
@@ -181,7 +180,8 @@ const Userpage = () => {
               filteredImages.map((img, index) => (
                 <div
                   key={index}
-                  className="group bg-white rounded-2xl shadow-md overflow-hidden border border-gray-200 hover:border-purple-400 transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                  className="group bg-white rounded-2xl shadow-md overflow-hidden border border-gray-200 hover:border-purple-400 transition-all duration-300 hover:scale-105 hover:shadow-xl animate-stagger-fade-in"
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="relative overflow-hidden bg-white">
                     <img
@@ -224,7 +224,7 @@ const Userpage = () => {
                 </div>
               ))
             ) : (
-              <div className="col-span-full flex flex-col items-center justify-center py-20">
+              <div className="col-span-full flex flex-col items-center justify-center py-20 animate-fade-in-up">
                 <div className="bg-gray-100 rounded-full p-8 mb-6">
                   <Search className="w-16 h-16 text-gray-400" />
                 </div>
@@ -237,6 +237,46 @@ const Userpage = () => {
           </div>
         </div>
       </div>
+
+      {/* Add custom animations to your CSS or Tailwind config */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideDown {
+          from { transform: translateY(-20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes bounceIn {
+          0% { transform: scale(0.3); opacity: 0; }
+          50% { transform: scale(1.05); opacity: 0.8; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes scaleIn {
+          from { transform: scale(0.8); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes staggerFadeIn {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pulseSlow {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+        @keyframes pulseGentle {
+          0%, 100% { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+          50% { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
+        }
+        .animate-fade-in { animation: fadeIn 0.8s ease-out; }
+        .animate-slide-down { animation: slideDown 0.8s ease-out; }
+        .animate-bounce-in { animation: bounceIn 1s ease-out; }
+        .animate-scale-in { animation: scaleIn 0.6s ease-out; }
+        .animate-stagger-fade-in { animation: staggerFadeIn 0.6s ease-out both; }
+        .animate-pulse-slow { animation: pulseSlow 3s infinite; }
+        .animate-pulse-gentle { animation: pulseGentle 2s infinite; }
+      `}</style>
     </div>
   );
 };
