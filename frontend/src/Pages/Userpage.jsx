@@ -5,19 +5,24 @@ import Swal from "sweetalert2";
 import Usernab from "../Components/Usernab";
 import "sweetalert2/dist/sweetalert2.min.css";
 
+// Import the video properly
+import video1 from "../Assets/backgroundImage.mp4"; 
+
+const fallbackVideos = [
+  "https://assets.mixkit.co/videos/preview/mixkit-tree-with-yellow-flowers-1173-large.mp4",
+  "https://assets.mixkit.co/videos/preview/mixkit-white-clouds-passing-in-the-sky-1175-large.mp4"
+];
+
 const Userpage = () => {
   const [images, setImages] = useState([]);
   const [search, setSearch] = useState("");
   const [filteredImages, setFilteredImages] = useState([]);
   const [downloadingIndex, setDownloadingIndex] = useState(null);
-  const [currentBgImage, setCurrentBgImage] = useState(0);
+  const [currentBgVideo, setCurrentBgVideo] = useState(0);
   const [isPageLoading, setIsPageLoading] = useState(true);
+  const [videoError, setVideoError] = useState(false);
 
-  const backgroundImages = [
-    "https://www.pexels.com/photo/warm-light-through-a-window-at-dusk-30059049/",
-    "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1920&q=80",
-    "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=1920&q=80"
-  ];
+  const backgroundVideos = video1 ? [video1] : fallbackVideos;
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -31,15 +36,8 @@ const Userpage = () => {
     };
     fetchImages();
 
-    const timer = setTimeout(() => setIsPageLoading(false), 1500); // Page load duration
+    const timer = setTimeout(() => setIsPageLoading(false), 1500);
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentBgImage((prev) => (prev + 1) % backgroundImages.length);
-    }, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -96,12 +94,11 @@ const Userpage = () => {
     }
   };
 
-  // Page load overlay with background blur + new loader
+  // Page load overlay with background blur + loader
   if (isPageLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 via-purple-50 to-blue-50 backdrop-blur-md z-50 animate-fade-in">
         <div className="flex flex-col items-center gap-5">
-          {/* New loading icon: bouncing circle */}
           <div className="w-16 h-16 rounded-full border-4 border-purple-500 border-t-transparent animate-spin"></div>
           <p className="text-gray-800 text-xl font-semibold animate-pulse">Loading gallery...</p>
         </div>
@@ -116,21 +113,18 @@ const Userpage = () => {
         <div className="max-w-7xl mx-auto mt-20 px-4 pb-20">
           {/* Header Section */}
           <div className="relative text-center mb-12 rounded-3xl overflow-hidden shadow-2xl animate-slide-down">
-            <div className="absolute inset-0">
-              {backgroundImages.map((img, index) => (
-                <div
-                  key={index}
-                  className="absolute inset-0 transition-opacity duration-1000"
-                  style={{
-                    opacity: currentBgImage === index ? 1 : 0,
-                    backgroundImage: `url(${img})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
-                />
-              ))}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60"></div>
-            </div>
+            <video
+              className="absolute inset-0 w-full h-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              src={videoError ? fallbackVideos[0] : backgroundVideos[0]}
+              onError={() => setVideoError(true)}
+            >
+              Your browser does not support the video tag.
+            </video>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70"></div>
 
             <div className="relative z-10 py-20 px-4">
               <div className="flex items-center justify-center mb-6 animate-bounce-in">
@@ -158,18 +152,6 @@ const Userpage = () => {
                     className="w-full pl-12 pr-6 py-4 rounded-xl bg-white/95 backdrop-blur-sm border-2 border-white/30 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all shadow-xl hover:shadow-2xl animate-pulse-gentle"
                   />
                 </div>
-              </div>
-
-              <div className="flex justify-center gap-2 mt-6 animate-fade-in delay-700">
-                {backgroundImages.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentBgImage(index)}
-                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                      currentBgImage === index ? "bg-white w-8" : "bg-white/50"
-                    }`}
-                  />
-                ))}
               </div>
             </div>
           </div>
@@ -238,37 +220,15 @@ const Userpage = () => {
         </div>
       </div>
 
-      {/* Add custom animations to your CSS or Tailwind config */}
+      {/* CSS animations */}
       <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slideDown {
-          from { transform: translateY(-20px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes bounceIn {
-          0% { transform: scale(0.3); opacity: 0; }
-          50% { transform: scale(1.05); opacity: 0.8; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes scaleIn {
-          from { transform: scale(0.8); opacity: 0; }
-          to { transform: scale(1); opacity: 1; }
-        }
-        @keyframes staggerFadeIn {
-          from { transform: translateY(20px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes pulseSlow {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.05); }
-        }
-        @keyframes pulseGentle {
-          0%, 100% { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
-          50% { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes scaleIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes staggerFadeIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulseSlow { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes pulseGentle { 0%, 100% { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); } 50% { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); } }
         .animate-fade-in { animation: fadeIn 0.8s ease-out; }
         .animate-slide-down { animation: slideDown 0.8s ease-out; }
         .animate-bounce-in { animation: bounceIn 1s ease-out; }
