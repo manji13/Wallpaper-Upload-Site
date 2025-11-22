@@ -14,12 +14,14 @@ import ImageEdit from "./Pages/ImageEdit.jsx";
 import UserPolicy from "./Pages/Policy/UserPolicy.jsx";
 import RemoveBackground from "./Pages/RemoveBackground.jsx";
 import Contactus from "./Pages/contactus.jsx";
+import ChatBot from './Pages/Chatbot.jsx'; 
 
 import Employeepage from "./Pages/Employeepage.jsx";
 import EmployeeChart from "./Pages/EmployeeChart.jsx";
 import AddPolicy from "./Pages/Policy/AddPolicy.jsx";
 import EditPolicy from "./Pages/Policy/Editpolicy.jsx";
 import EditPolicyForm from "./Pages/Policy/EditPolicyForm.jsx";
+
 
 function App() {
   return (
@@ -38,6 +40,7 @@ function App() {
         <Route path="/userpolicy" element={<UserPolicy />} />
         <Route path="/removebackground" element={<RemoveBackground />} />
         <Route path="/contact" element={<Contactus />} />
+        <Route path="/chatbot" element={<ChatBot />} />
 
         <Route path="/employeepage" element={<Employeepage />} />
         <Route path="/chartpage" element={<EmployeeChart />} />
