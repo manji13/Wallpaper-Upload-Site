@@ -3,6 +3,7 @@ import axios from "axios";
 import { Search, Download, Images, User } from "lucide-react"; 
 import Swal from "sweetalert2";
 import Usernab from "../Components/Usernab";
+import ChatBot from "../Pages/Chatbot.jsx"; // ✅ 1. Import ChatBot here
 import "sweetalert2/dist/sweetalert2.min.css";
 
 // Import the video properly
@@ -18,7 +19,6 @@ const Userpage = () => {
   const [search, setSearch] = useState("");
   const [filteredImages, setFilteredImages] = useState([]);
   const [downloadingIndex, setDownloadingIndex] = useState(null);
-  const [currentBgVideo, setCurrentBgVideo] = useState(0);
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [videoError, setVideoError] = useState(false);
 
@@ -63,8 +63,6 @@ const Userpage = () => {
       cancelButtonColor: "#ef4444",
       background: "#ffffff",
       color: "#1f2937",
-      showClass: { popup: "animate__animated animate__fadeInDown" },
-      hideClass: { popup: "animate__animated animate__fadeOutUp" },
     });
 
     if (result.isConfirmed) {
@@ -82,19 +80,11 @@ const Userpage = () => {
         setTimeout(() => setDownloadingIndex(null), 1500);
       } catch (err) {
         console.error("Download failed:", err);
-        Swal.fire({
-          title: "Error",
-          text: "Download failed. Try again.",
-          icon: "error",
-          background: "#ffffff",
-          color: "#1f2937",
-        });
         setDownloadingIndex(null);
       }
     }
   };
 
-  // Page load overlay with background blur + loader
   if (isPageLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 via-purple-50 to-blue-50 backdrop-blur-md z-50 animate-fade-in">
@@ -107,8 +97,12 @@ const Userpage = () => {
   }
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in relative"> {/* Added relative for safety */}
       <Usernab />
+      
+      {/* ✅ 2. Add the ChatBot Component here */}
+      <ChatBot />
+
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50 to-blue-50">
         <div className="max-w-7xl mx-auto mt-20 px-4 pb-20">
           {/* Header Section */}
@@ -220,7 +214,6 @@ const Userpage = () => {
         </div>
       </div>
 
-      {/* CSS animations */}
       <style jsx>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

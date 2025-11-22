@@ -4,6 +4,7 @@ import Usernab from "../Components/Usernab";
 import Swal from "sweetalert2";
 import axios from "axios";
 import "sweetalert2/dist/sweetalert2.min.css";
+import ChatBot from "../Pages/Chatbot.jsx";
 
 const RemoveBackground = () => {
   const [image, setImage] = useState(null);
@@ -112,6 +113,7 @@ const RemoveBackground = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <Usernab />
+      <ChatBot />
       <div className="max-w-6xl mx-auto px-4 py-12 pt-24">
         {/* Header */}
         <div className="text-center mb-12">
