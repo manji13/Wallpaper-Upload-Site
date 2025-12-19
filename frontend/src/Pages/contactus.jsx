@@ -3,6 +3,8 @@ import axios from "axios";
 import Usernab from "../Components/Usernab";
 import { motion } from "framer-motion"; // Import Framer Motion
 
+import Footer from "../Components/footer";
+
 const Contactus = () => {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [status, setStatus] = useState("");
@@ -45,6 +47,7 @@ const Contactus = () => {
   };
 
   return (
+    <div>
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-blue-50">
       <Usernab />
 
@@ -143,6 +146,8 @@ const Contactus = () => {
           )}
         </motion.div>
       </div>
+    </div>
+ <Footer />
     </div>
   );
 };

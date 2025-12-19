@@ -3,6 +3,8 @@ import axios from "axios";
 import Usernab from "../../Components/Usernab";
 import { FileText, Shield, CheckCircle } from "lucide-react";
 
+import Footer from "../../Components/footer";
+
 const UserPolicy = () => {
   const [policies, setPolicies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +39,7 @@ const UserPolicy = () => {
   }
 
   return (
+    <div>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       <Usernab />
       <div className="max-w-5xl mx-auto px-4 py-12 pt-24">
@@ -119,6 +122,9 @@ const UserPolicy = () => {
           </div>
         </div>
       </div>
+    </div>
+
+    <Footer />
     </div>
   );
 };

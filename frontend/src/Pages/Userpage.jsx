@@ -6,6 +6,8 @@ import Usernab from "../Components/Usernab";
 import ChatBot from "../Pages/Chatbot.jsx"; // ✅ 1. Import ChatBot here
 import "sweetalert2/dist/sweetalert2.min.css";
 
+import Footer from "../Components/footer.jsx";
+
 // Import the video properly
 import video1 from "../Assets/backgroundImage.mp4"; 
 
@@ -97,6 +99,7 @@ const Userpage = () => {
   }
 
   return (
+    <div>
     <div className="animate-fade-in relative"> {/* Added relative for safety */}
       <Usernab />
       
@@ -230,6 +233,8 @@ const Userpage = () => {
         .animate-pulse-slow { animation: pulseSlow 3s infinite; }
         .animate-pulse-gentle { animation: pulseGentle 2s infinite; }
       `}</style>
+    </div>
+    <Footer />
     </div>
   );
 };
