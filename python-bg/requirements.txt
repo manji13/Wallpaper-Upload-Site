@@ -1,8 +1,4 @@
 flask
 rembg
 pillow
-watchdog
-aiohttp
-gradio
 numpy
-scikit-image
