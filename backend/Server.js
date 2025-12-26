@@ -11,7 +11,7 @@ import userRouter from "./Routes/userRoutes.js";
 import uploadRouter from "./Routes/uploadImageRoutes.js";
 import policyRouter from "./Routes/policyRoutes.js";
 import removeRoutes from "./Routes/removeRoutes.js";
-import chatRouter from "./Routes/chatRoutes.js"; // ✅ Must be here
+import chatRouter from "./Routes/chatRoutes.js"; 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,10 +21,13 @@ const app = express();
 connectDB();
 
 app.use(express.json());
+
+// Update CORS for Vercel
+// Allow your frontend domain OR use "*" for testing
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://YOUR-FRONTEND-URL.vercel.app"], 
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
 }));
 
 app.use("/uploads", express.static(path.join(__dirname, "Upload")));
@@ -34,7 +37,7 @@ app.use("/api/users", userRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/policy", policyRouter);
 app.use("/api/remove", removeRoutes);
-app.use("/api/chat", chatRouter); // ✅ Must be here
+app.use("/api/chat", chatRouter);
 
 // Contact Route
 app.post("/api/contact", async (req, res) => {
@@ -43,7 +46,7 @@ app.post("/api/contact", async (req, res) => {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
-      auth: { user: "manjikavi8@gmail.com", pass: "wphigkzfptyykllc" },
+      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }, // Use Env vars!
     });
     const mailOptions = {
       from: email,
@@ -61,5 +64,13 @@ app.post("/api/contact", async (req, res) => {
 
 app.get("/", (req, res) => res.send("API is running..."));
 
+// VERCEL CONFIGURATION
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+// Only listen if NOT running on Vercel (allows local testing)
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+}
+
+// Export the app for Vercel
+export default app;

@@ -1,3 +1,7 @@
+import os
+# Set local directory for model download to /tmp (Vercel requires this)
+os.environ['U2NET_HOME'] = '/tmp/.u2net'
+
 from flask import Flask, request, send_file
 from rembg import remove, new_session
 from io import BytesIO
@@ -18,20 +22,18 @@ def remove_bg():
     input_image = file.read()
 
     try:
-        # ✅ Create a session with the U2NET model
+        # Create session (will download to /tmp on Vercel)
         session = new_session("u2net")
 
-        # Background removal using session
         output_bytes = remove(
             input_image,
             alpha_matting=True,
             alpha_matting_foreground_threshold=260,
             alpha_matting_background_threshold=10,
             alpha_matting_erode_size=15,
-            session=session  # <-- pass the session here, NOT model_name
+            session=session
         )
 
-        # Open as RGBA
         img = Image.open(BytesIO(output_bytes)).convert("RGBA")
 
         # Clean faint edge pixels
@@ -44,7 +46,6 @@ def remove_bg():
                 else:
                     pixels[x, y] = (min(255, int(r * 1.05)), min(255, int(g * 1.05)), b, a)
 
-        # Save in memory
         buf = BytesIO()
         img.save(buf, format="PNG", optimize=False)
         buf.seek(0)
@@ -53,8 +54,9 @@ def remove_bg():
 
     except Exception as e:
         print("❌ Background removal failed:", str(e))
-        return {"error": "Background removal failed"}, 500
+        return {"error": f"Background removal failed: {str(e)}"}, 500
 
-
+# Vercel requires the app variable to be available at module level
+# We don't need app.run() for Vercel
 if __name__ == '__main__':
     app.run(port=5001)
